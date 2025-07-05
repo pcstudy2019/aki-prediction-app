@@ -50,6 +50,9 @@ FEATURE_DISPLAY_NAMES = {
     'Hypokalemia': '低钾血症'
 }
 
+# 从表格提取RF的最优阈值（0.02244498）
+RF_OPTIMAL_THRESHOLD = 0.02244498
+
 # 创建输入表单
 def create_input_form():
     with st.form("patient_input_form"):
@@ -169,9 +172,9 @@ def main():
         display_df.columns = [FEATURE_DISPLAY_NAMES.get(col, col) for col in display_df.columns]
         st.dataframe(display_df)
         
-        # 预测
-        prediction = model.predict(patient_data)
+        # 预测（使用最优阈值）
         probability = model.predict_proba(patient_data)[:, 1][0]
+        prediction = 1 if probability > RF_OPTIMAL_THRESHOLD else 0
         
         # 显示预测结果
         st.subheader("预测结果")
@@ -180,11 +183,11 @@ def main():
             st.metric(
                 "AKI风险概率", 
                 f"{probability:.2%}",
-                delta="高风险" if probability > 0.02244498 else "低风险",
-                delta_color="inverse" if probability > 0.02244498 else "normal"
+                delta="高风险" if probability > RF_OPTIMAL_THRESHOLD else "低风险",
+                delta_color="inverse" if probability > RF_OPTIMAL_THRESHOLD else "normal"
             )
         with col2:
-            st.write(f"预测类别: {'AKI' if prediction[0] == 1 else '非AKI'}")
+            st.write(f"预测类别: {'AKI' if prediction == 1 else '非AKI'}")
         
         # 为SHAP值计算准备训练数据摘要
         st.subheader("模型决策解释")
