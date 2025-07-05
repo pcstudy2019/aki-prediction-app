@@ -180,8 +180,8 @@ def main():
             st.metric(
                 "AKI风险概率", 
                 f"{probability:.2%}",
-                delta="高风险" if probability > 0.5 else "低风险",
-                delta_color="inverse" if probability > 0.5 else "normal"
+                delta="高风险" if probability > 0.02244498 else "低风险",
+                delta_color="inverse" if probability > 0.02244498 else "normal"
             )
         with col2:
             st.write(f"预测类别: {'AKI' if prediction[0] == 1 else '非AKI'}")
